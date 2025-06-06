@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class PlanSeeder extends Seeder
 {
@@ -23,6 +25,8 @@ class PlanSeeder extends Seeder
                 'duration' => 1, // 1 month
                 'resolution' => '720p',
                 'max_devices' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'title' => 'Standard Plan',
@@ -30,6 +34,8 @@ class PlanSeeder extends Seeder
                 'duration' => 1, // 1 month
                 'resolution' => '1080p',
                 'max_devices' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'title' => 'Premium Plan',
@@ -37,6 +43,8 @@ class PlanSeeder extends Seeder
                 'duration' => 1, // 1 month
                 'resolution' => '4K',
                 'max_devices' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ];
 
