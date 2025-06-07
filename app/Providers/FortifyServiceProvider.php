@@ -13,6 +13,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\RegisterResponse;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Illuminate\Support\Facades\Auth;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,18 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(RegisterResponse::class, new class implements RegisterResponse{
             public function toResponse($request)
             {
+                return redirect()->route('subscribe.plans');
+            }
+        });
+
+        $this->app->instance(LoginResponse::class, new class implements LoginResponse {
+            public function toResponse($request)
+            {
+                // check if the user has a membership plan
+                if (Auth::user()->hasMembershipPlan()) {
+                    return redirect()->intended(config('fortify.home'));
+                }
+
                 return redirect()->route('subscribe.plans');
             }
         });
