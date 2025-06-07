@@ -18,34 +18,34 @@ class PlanSeeder extends Seeder
 
         DB::table('plans')->truncate();
 
-        $plans = [
+       $plans = [
             [
-                'title' => 'Basic Plan',
-                'price' => 50000,
-                'duration' => 1, // 1 month
+                'title' => 'Basic',
+                'price' => 49999,
                 'resolution' => '720p',
                 'max_devices' => 1,
+                'duration' => 30,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Standard Plan',
-                'price' => 100000,
-                'duration' => 1, // 1 month
+                'title' => 'Standard',
+                'price' => 89999,
                 'resolution' => '1080p',
                 'max_devices' => 2,
+                'duration' => 30,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'title' => 'Premium Plan',
-                'price' => 200000,
-                'duration' => 1, // 1 month
-                'resolution' => '4K',
+                'title' => 'Premium',
+                'price' => 129999,
+                'resolution' => '4k',
                 'max_devices' => 4,
+                'duration' => 30,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
+            ]
         ];
 
         DB::table('plans')->insert($plans);
