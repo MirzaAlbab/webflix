@@ -7,6 +7,11 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/home', function () {
+    return view('home');
+})->middleware(['auth'])
+    ->name('home');
+
 Route::get('/subscribe/plans', [SubscribeController::class, 'showPlans'])
     ->name('subscribe.plans');
 Route::get('/subscribe/plan/{plan}', [SubscribeController::class, 'checkoutPlan'])
