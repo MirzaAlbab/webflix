@@ -10,4 +10,8 @@ Route::get('/', function () {
 Route::get('/subscribe/plans', [SubscribeController::class, 'showPlans'])
     ->name('subscribe.plans');
 Route::get('/subscribe/plan/{plan}', [SubscribeController::class, 'checkoutPlan'])
-    ->name('subscribe.plan');
+    ->name('subscribe.checkout');
+Route::post('subscribe/checkout', [SubscribeController::class, 'processCheckout'])
+    ->name('subscribe.process');
+Route::get('/subscribe/success', [SubscribeController::class, 'checkoutSuccess'])
+    ->name('subscribe.success');

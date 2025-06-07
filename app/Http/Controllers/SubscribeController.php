@@ -35,4 +35,25 @@ class SubscribeController extends Controller implements HasMiddleware
         $user = Auth::user();
         return view('subscribe.checkout', compact('plan', 'user'));
     }
+
+    public function processCheckout(Request $request)
+    {
+
+        $user = Auth::user();
+        $plan = Plan::findOrFail($request->plan_id);
+
+        // Logic to create a membership for the user
+        $user->memberships()->create([
+            'plan_id' => $plan->id,
+            'start_date' => now(),
+            'end_date' => now()->addDays($plan->duration),
+            'active' => true,
+        ]);
+
+        return redirect()->route('subscribe.success');
+    }
+    public function checkoutSuccess()
+    {
+        return view('subscribe.success');
+    }
 }
