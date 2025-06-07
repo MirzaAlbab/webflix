@@ -2,10 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\UserDevice;
+use App\Service\DeviceLimitService;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Services\DeviceLimitService;
 use Illuminate\Support\Facades\Auth;
 
 class CheckDeviceLimit

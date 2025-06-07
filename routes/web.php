@@ -9,7 +9,7 @@ Route::get('/', function () {
 
 Route::get('/home', function () {
     return view('home');
-})->middleware(['auth'])
+})->middleware(['auth', 'check.device.limit'])
     ->name('home');
 
 Route::get('/subscribe/plans', [SubscribeController::class, 'showPlans'])
