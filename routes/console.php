@@ -17,4 +17,4 @@ Artisan::command('inspire', function () {
 //     ->onOneServer()
 //     ->evenInMaintenanceMode();
 
-Schedule::command('membership:check')->everyMinute();
+Schedule::command('memberships:check')->everyMinute();

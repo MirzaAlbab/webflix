@@ -6,6 +6,7 @@ use App\Models\Membership;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
+
 class CheckMembershipStatus implements ShouldQueue
 {
     use Queueable;
@@ -28,12 +29,11 @@ class CheckMembershipStatus implements ShouldQueue
     public function handle(): void
     {
         Membership::where('active', true)
-            ->where('end_date', '<' ,now()->toDateTimeString())
-            ->chunk(100)->each(function ($memberships) {
+            ->where('end_date', '<', now()->toDateString())
+            ->chunk(100, function ($memberships) {
                 foreach ($memberships as $membership) {
-                    $membership->update([
-                        'active' => false,
-                    ]);
+                    $membership->update(['active' => false]);
+
                 }
             });
     }

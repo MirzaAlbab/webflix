@@ -19,7 +19,7 @@ class CheckMemberships extends Command
      *
      * @var string
      */
-    protected $description = '=Check and deactivate expired memberships';
+    protected $description = 'Check and deactivate expired memberships';
 
     /**
      * Execute the console command.
