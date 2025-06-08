@@ -16,6 +16,16 @@ class MovieController extends Controller implements HasMiddleware
         ];
     }
 
+    public function all(Request $request){
+        // Logic to fetch and display all movies
+        $movies = Movie::latest()->paginate(8);
+        if($request->ajax()){
+            $html = view('components.movie-list', compact('movies'))->render();
+            return response()->json(['html' => $html, 'next_page' => $movies->nextPageUrl()]);
+        }
+        return view('movies.all', compact('movies'));
+
+    }
     public function index()
     {
         // Logic to fetch and display movies

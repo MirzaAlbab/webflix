@@ -11,7 +11,7 @@ Route::get('/', function () {
 });
 
 Route::get('/home', [MovieController::class, 'index'])->name('home');
-Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
+Route::get('/movies', [MovieController::class, 'all'])->name('movies.index');
 Route::get('/movies/search', [MovieController::class, 'search'])->name('movies.search');
 Route::get('/movies/{movie:slug}', [MovieController::class, 'show'])->name('movies.show');
 Route::get('/categories/{category:slug}', [CategoryController::class, 'show'])->name('categories.show');
