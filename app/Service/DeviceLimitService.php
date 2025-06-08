@@ -19,7 +19,6 @@ class DeviceLimitService
             session(['device_id' => $existingDevice->device_id]);
             return $existingDevice;
         }
-
         if ($this->hasReachedDeviceLimit($user)) {
             return false; // Tidak bisa login di device tambahan
         }
