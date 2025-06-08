@@ -34,7 +34,7 @@ class Movie extends Model
     {
         return $this->hasMany(Rating::class);
     }
-    public function getAverageRating(): float
+    public function getAverageRatingAttribute(): float
     {
         return $this->ratings()->avg('rating');
     }

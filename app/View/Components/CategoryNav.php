@@ -17,12 +17,13 @@ class CategoryNav extends Component
     public function __construct()
     {
         $data = Cache::remember('categories', 3600, function(){
-            return Category::select('id, title', 'slug')
+            return Category::select('id','title', 'slug')
                 ->orderBy('title', 'asc')
                 ->get();
         });
 
-        $this->categories = $data->chunk(ceil($data->count() / 3))
+        $this->categories = $data->chunk(ceil($data->count() / 3));
+
     }
 
     /**
