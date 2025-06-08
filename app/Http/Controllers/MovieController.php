@@ -28,7 +28,6 @@ class MovieController extends Controller
         // Logic to fetch and display a single movie
         $userPlan = Auth::user()->getCurrentPlan();
         $streamingUrl = $movie->getStreamingUrl($userPlan->resolution);
-        dd($streamingUrl);
         
         return view('movies.show', compact('movie', 'streamingUrl'));
     }

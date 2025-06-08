@@ -55,7 +55,14 @@ class Movie extends Model
     {
         $hours = floor($this->duration / 60);
         $minutes = $this->duration % 60;
-        return sprintf('%02d:%02d', $hours, $minutes);
+        $formatted = '';
+        if ($hours > 0) {
+            $formatted .= "{$hours}h ";
+        }
+        if ($minutes > 0 || $hours == 0) {
+            $formatted .= "{$minutes}m";
+        }
+        return trim($formatted);
     }
 
 }

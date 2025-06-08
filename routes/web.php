@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Route::get('/home', [MovieController::class, 'index'])->name('home');
 Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
-Route::get('/movies/{slug}', [MovieController::class, 'show'])->name('movies.show');
+Route::get('/movies/{movie:slug}', [MovieController::class, 'show'])->name('movies.show');
 Route::get('/movies/search', [MovieController::class, 'search'])->name('movies.search');
 
 Route::post('logout', function (Request $request) {
