@@ -33,7 +33,7 @@ class TransactionController extends Controller
         $transaction = Transaction::create([
             'user_id' => $user->id,
             'plan_id' => $request->plan_id,
-            'transcation_number' => $transactionNumber,
+            'transaction_number' => $transactionNumber,
             'total_amount' => $request->amount, // Example amount, replace with actual plan price
             'payment_status' => 'pending',
         ]);
@@ -41,7 +41,7 @@ class TransactionController extends Controller
         // Prepare Midtrans transaction data
         $payload = [
             'transaction_details' => [
-                'order_id' => $transaction->transcation_number,
+                'order_id' => $transaction->transaction_number,
                 'gross_amount' =>(int) $transaction->total_amount,
             ],
             'customer_details' => [
@@ -77,6 +77,5 @@ class TransactionController extends Controller
             ], 500);
         }
 
-        return response()->json($transaction);
     }
 }
