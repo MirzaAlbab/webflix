@@ -13,10 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-       $this->call([
+        User::factory()->count(10)->create();
+        $this->call([
             PlanSeeder::class,
             CategorySeeder::class,
             MovieSeeder::class,
+            CategoryMovieSeeder::class,
+            RatingSeeder::class
         ]);
     }
 }

@@ -40,7 +40,7 @@ class PlanSeeder extends Seeder
             [
                 'title' => 'Premium',
                 'price' => 129999,
-                'resolution' => '4k',
+                'resolution' => '4K',
                 'max_devices' => 4,
                 'duration' => 30,
                 'created_at' => now(),
