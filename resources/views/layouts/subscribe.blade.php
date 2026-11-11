@@ -16,6 +16,7 @@
 
         .card {
             background-color: #142936;
+            color: #f4f8fa;
             border: 1px solid #19BC9B;
             border-radius: 15px;
         }
@@ -23,6 +24,11 @@
         .card-header {
             background-color: #19BC9B;
             border-bottom: 1px solid #19BC9B;
+            color: #092029;
+        }
+
+        .card-header h3 {
+            color: #092029 !important;
         }
 
         .text-green {
@@ -44,6 +50,7 @@
 </head>
 
 <body>
+    <x-demo-banner />
     <div class="container py-5">
         <h2 class="mb-2 text-center">@yield('title')</h2>
 

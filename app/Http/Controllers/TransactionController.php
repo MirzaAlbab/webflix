@@ -2,134 +2,99 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
 use App\Models\Transaction;
+use App\Service\MidtransGateway;
+use App\Service\PaymentProcessor;
+use App\Support\Amount;
+use App\Support\DemoMode;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Midtrans\Config;
-use Midtrans\Snap;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
+use Throwable;
 
 class TransactionController extends Controller
 {
-    public function __construct()
+    public function checkout(Request $request, MidtransGateway $gateway)
     {
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = config('midtrans.is_sanitized');
-        Config::$is3ds = config('midtrans.is_3ds');
-
-    }
-
-    public function checkout(Request $request)
-    {
-        $user = Auth::user();
-        // Validate request data
-        $request->validate([
-            'plan_id' => 'required|exists:plans,id',
+        $validated = $request->validate([
+            'plan_id' => 'required|integer|exists:plans,id',
+            'terms' => 'accepted',
         ]);
+        $plan = Plan::findOrFail($validated['plan_id']);
+        abort_unless($plan->duration > 0 && $plan->totalAmount() > 0, 422, 'This plan is unavailable.');
 
-        $transactionNumber = 'ORDER-' . time() . '-' . $user->id;
-
-        // Create transaction
         $transaction = Transaction::create([
-            'user_id' => $user->id,
-            'plan_id' => $request->plan_id,
-            'transaction_number' => $transactionNumber,
-            'total_amount' => $request->amount, // Example amount, replace with actual plan price
+            'user_id' => $request->user()->id,
+            'plan_id' => $plan->id,
+            'transaction_number' => 'ORDER-'.Str::uuid(),
+            'total_amount' => $plan->totalAmount(),
             'payment_status' => 'pending',
         ]);
 
-        // Prepare Midtrans transaction data
-        $payload = [
-            'transaction_details' => [
-                'order_id' => $transaction->transaction_number,
-                'gross_amount' =>(int) $transaction->total_amount,
-            ],
-            'customer_details' => [
-                'first_name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone ?? '0000000000000',
-            ],
-            'item_details' => [
-                [
-                    'id' => $transaction->plan_id,
-                    'price' => (int) $transaction->total_amount,
-                    'quantity' => 1,
-                    'name' => $transaction->plan->title, // Replace with actual plan name
-                ],
-            ],
-        ];
-
-        // Create Midtrans Snap token
-        try{
-            // Get Snap Payment Page URL
-            $snapToken = Snap::getSnapToken($payload);
-            $transaction->update(['snap_token' => $snapToken]);
+        $statusUrl = route('subscribe.success', ['transaction' => $transaction->transaction_number]);
+        if (DemoMode::simulatesPayments()) {
             return response()->json([
                 'status' => 'success',
-                'snap_token' => $snapToken,
-                'message' => 'Transaction created successfully',
+                'checkout_url' => route('demo.payment', $transaction->transaction_number),
+                'status_url' => $statusUrl,
             ]);
-
-        }catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to create transaction: ' . $e->getMessage(),
-            ], 500);
         }
 
+        try {
+            $token = $gateway->createCheckout($transaction);
+            $transaction->update(['midtrans_snap_token' => $token]);
+
+            return response()->json(['status' => 'success', 'snap_token' => $token, 'status_url' => $statusUrl]);
+        } catch (Throwable $e) {
+            $transaction->update(['payment_status' => 'failed']);
+            Log::warning('Payment checkout could not be initialized.', ['order_id' => $transaction->transaction_number]);
+
+            return response()->json(['status' => 'error', 'message' => 'Payment is temporarily unavailable. Please try again.'], 503);
+        }
     }
 
-    public function callback(Request $request)
+    public function callback(Request $request, MidtransGateway $gateway, PaymentProcessor $processor)
     {
-        $serverKey = config('midtrans.server_key');
-        $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+        // Offline demo outcomes are accepted only through the authenticated demo form.
+        abort_if(DemoMode::simulatesPayments(), 404);
+        $key = config('midtrans.server_key');
+        abort_unless(is_string($key) && trim($key) !== '', 503, 'Payments are not configured.');
 
-        if($hashed == $request->signature_key){
-            $transaction = Transaction::with(['user', 'plan'])->where('transaction_number', $request->order_id)->first();
+        $validated = $request->validate([
+            'order_id' => 'required|string|max:255',
+            'status_code' => ['required', 'regex:/^\d{3}$/'],
+            'gross_amount' => ['required', 'regex:/^\d{1,10}(?:\.\d{1,2})?$/'],
+            'signature_key' => ['required', 'string', 'regex:/^[a-f0-9]{128}$/'],
+        ]);
+        $signature = hash('sha512', $validated['order_id'].$validated['status_code'].$validated['gross_amount'].$key);
+        abort_unless(hash_equals($signature, $validated['signature_key']), 403, 'Invalid payment signature.');
 
-            if($transaction){
-                $paymentStatus = 'pending';
+        $transaction = Transaction::where('transaction_number', $validated['order_id'])->firstOrFail();
+        abort_unless(Amount::minorUnits($validated['gross_amount']) === Amount::minorUnits($transaction->total_amount), 422, 'Payment amount does not match the order.');
+        try {
+            // Fetch authoritative status: notification fields are not a payment receipt.
+            $status = $gateway->status($transaction->transaction_number);
+        } catch (Throwable $e) {
+            Log::warning('Payment verification is temporarily unavailable.', ['order_id' => $transaction->transaction_number]);
 
-                if($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
-                    $paymentStatus = 'success';
-                    $user = $transaction->user;
-                    $plan = $transaction->plan;
-
-                    // Logic to create a membership for the user
-                    try {
-                        DB::beginTransaction();
-                        $user->memberships()->create([
-                            'plan_id' => $plan->id,
-                            'start_date' => now(),
-                            'end_date' => now()->addDays($plan->duration),
-                            'active' => true,
-                        ]);
-
-                        $transaction->update([
-                            'payment_status' => $paymentStatus,
-                            'midtrans_transaction_id' => $request->transaction_id,
-                        ]);
-                        DB::commit();
-                    } catch (\Exception $e) {
-                        Log::error('Failed to process successful payment: ' . $e->getMessage());
-                        return response()->json([
-                            'status' => 'error',
-                            'message' => 'Failed to process membership ' . $e->getMessage(),
-                        ], 500);
-                        //throw $th;
-                    }
-                } elseif($request->transaction_status == 'deny' || $request->transaction_status == 'expire' || $request->transaction_status == 'cancel') {
-                    $paymentStatus = 'failed';
-                    $transaction->update([
-                        'payment_status' => $paymentStatus,
-                        'midtrans_transaction_id' => $request->transaction_id,
-                    ]);
-                }
-                return response()->json(['status' => 'success']);
-            }
+            return response()->json(['status' => 'error', 'message' => 'Payment verification unavailable. Retry this notification.'], 503);
         }
-        return response()->json(['status' => 'error'], 404);
+
+        try {
+            $processor->applyStatus($transaction, $status);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['status' => 'error', 'message' => 'Payment details do not match the order.'], 422);
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function status(Request $request, Transaction $transaction)
+    {
+        abort_unless($transaction->user_id === $request->user()->id, 404);
+
+        return response()->json(['payment_status' => $transaction->payment_status]);
     }
 }

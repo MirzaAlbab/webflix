@@ -5,7 +5,7 @@
             <!-- <span class="navbar-toggler-icon"></span> -->
             <i class="text-white fa-solid fa-bars"></i>
         </button>
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="{{ route('catalog') }}">
             <img class="navbar-icon" src="{{ asset('assets/img/codeflix_logo.png') }}" alt="">
         </a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
@@ -25,7 +25,7 @@
                     <ul class="dropdown-menu notification">
                         <li>
                             <a class="dropdown-item notification-item" href="#">
-                                <img class="time-subscribe" src="assets/img/Clock.png" alt="">
+                                <img class="time-subscribe" src="{{ asset('assets/img/Clock.png') }}" alt="">
                                 <div class="notification-content">
                                     <p class="multi-line-text-subscribe">Subscribe Premium<br>Telah Habis!</p>
                                     <span class="notification-date">Hari Ini</span>
@@ -34,7 +34,7 @@
                         </li>
                         <li>
                             <a class="dropdown-item notification-item" href="#">
-                                <img class="time-subscribe" src="assets/img/Kingkong.png" alt="">
+                                <img class="time-subscribe" src="{{ asset('assets/img/Kingkong.png') }}" alt="">
                                 <div class="notification-content">
                                     <p class="multi-line-text-subscribe">Film Baru</p>
                                     <p class="multi-line-text-new-movie">Khong Guan Super</p>
@@ -44,7 +44,7 @@
                         </li>
                         <li>
                             <a class="dropdown-item notification-item" href="#">
-                                <img class="time-subscribe" src="assets/img/Blackhat.png" alt="">
+                                <img class="time-subscribe" src="{{ asset('assets/img/Blackhat.png') }}" alt="">
                                 <div class="notification-content">
                                     <p class="multi-line-text-subscribe">Film Baru</p>
                                     <p class="multi-line-text-new-movie">Black Hat</p>
@@ -54,7 +54,7 @@
                         </li>
                         <li>
                             <a class="dropdown-item notification-item" href="#">
-                                <img class="time-subscribe" src="assets/img/Kingkong.png" alt="">
+                                <img class="time-subscribe" src="{{ asset('assets/img/Kingkong.png') }}" alt="">
                                 <div class="notification-content">
                                     <p class="multi-line-text-subscribe">Film Baru</p>
                                     <p class="multi-line-text-new-movie">Laugh Tate</p>
@@ -70,8 +70,8 @@
                         <i class="fa-solid fa-user user-icon"></i>
                     </a>
                     <ul class="dropdown-menu user-info">
-                        <li><a class="dropdown-item user-info-item" href="#"><i
-                                    class="fa-solid fa-circle-user"></i> Profile Setting</a></li>
+                        <li><a class="dropdown-item user-info-item" href="{{ route('subscribe.plans') }}"><i
+                                    class="fa-solid fa-circle-user"></i> Subscription plans</a></li>
                         <li>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 {{ csrf_field() }}

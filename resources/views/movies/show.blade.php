@@ -3,7 +3,7 @@
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a class="breadcrumb-link-home" href="#">Home</a></li>
+            <li class="breadcrumb-item"><a class="breadcrumb-link-home" href="{{ route('catalog') }}">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page">{{ $movie->title }}</li>
         </ol>
     </nav>

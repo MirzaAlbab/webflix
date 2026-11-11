@@ -8,8 +8,8 @@
         @csrf
         <div class="mb-3 f-email">
             <input type="text" name="name" class="form-control form-email @error('name') is-invalid @enderror"
-                id="InputEmail" value="{{ old('name') }}" required autofocus>
-            <label for="InputEmail" class="form-label form-label-email">Full Name</label>
+                id="InputName" value="{{ old('name') }}" required autofocus>
+            <label for="InputName" class="form-label form-label-email">Full Name</label>
         </div>
         <div class="mb-3 f-email">
             <input type="email" name="email" class="form-control form-email @error('email') is-invalid @enderror"
@@ -19,14 +19,14 @@
         <div class="mb-3 f-password">
             <input type="password" name="password"
                 class="form-control form-password @error('password') is-invalid @enderror" id="InputPassword" required>
-            <i class="fa fa-eye-slash toggle-password" id="togglePassword"></i>
+            <i class="fa fa-eye-slash toggle-password"></i>
             <label for="InputPassword" class="form-label form-label-password">Password</label>
         </div>
         <div class="mb-3 f-password">
             <input type="password" name="password_confirmation" class="form-control form-password"
                 id="InputPasswordConfirmation" required>
-            <i class="fa fa-eye-slash toggle-password" id="togglePassword"></i>
-            <label for="InputPassword" class="form-label form-label-password">Confirm Password</label>
+            <i class="fa fa-eye-slash toggle-password"></i>
+            <label for="InputPasswordConfirmation" class="form-label form-label-password">Confirm Password</label>
         </div>
         <button type="submit" class="btn btn-primary btn-sign-in">Register</button>
         <div class="mt-3 text-center">

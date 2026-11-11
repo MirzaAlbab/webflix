@@ -12,7 +12,7 @@ class Transaction extends Model
         'transaction_number',
         'total_amount',
         'payment_status',
-        'midtras_snap_token',
+        'midtrans_snap_token',
         'midtrans_transaction_id',
         'midtrans_booking_code',
     ];

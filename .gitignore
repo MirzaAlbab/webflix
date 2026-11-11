@@ -26,3 +26,7 @@ Thumbs.db
 yarn-error.log
 
 .vercel
+
+/storage/demo
+/test-results
+/playwright-report

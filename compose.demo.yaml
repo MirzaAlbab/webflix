@@ -1,0 +1,32 @@
+services:
+  assets:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - .:/app:ro
+      - build-assets:/app/public/build
+      - npm-modules:/app/node_modules
+    command: sh -c "npm ci --cache /tmp/npm-cache --no-audit --no-fund && npm run build"
+  webflix:
+    build:
+      context: .
+      dockerfile: Dockerfile.demo
+    ports:
+      - "127.0.0.1:8001:8001"
+    environment:
+      DEMO_SIMULATE_PAYMENTS: ${DEMO_SIMULATE_PAYMENTS:-true}
+      MIDTRANS_MERCHANT_ID: ${MIDTRANS_MERCHANT_ID:-}
+      MIDTRANS_SERVER_KEY: ${MIDTRANS_SERVER_KEY:-}
+      MIDTRANS_CLIENT_KEY: ${MIDTRANS_CLIENT_KEY:-}
+    volumes:
+      - demo-data:/app/storage/demo
+      - build-assets:/app/public/build:ro
+    depends_on:
+      assets:
+        condition: service_completed_successfully
+    init: true
+
+volumes:
+  demo-data:
+  build-assets:
+  npm-modules:

@@ -9,11 +9,23 @@
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/fontawesome-free-6.6.0-web/css/all.css') }}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    @vite('resources/js/app.js')
+    @stack('styles')
+    @if(\App\Support\DemoMode::enabled())
+        <style>
+            .category-title { margin-top: 10rem; }
+            .breadcrumb { margin-top: 10rem; }
+            .jumbotron { margin-top: 10rem; }
+        </style>
+    @endif
 </head>
 
 <body>
+
     <x-navbar />
+    @if(\App\Support\DemoMode::enabled())
+        <div style="position:fixed;top:76px;left:0;right:0;z-index:1000"><x-demo-banner /></div>
+    @endif
 
     @yield('content')
 
@@ -27,41 +39,6 @@
         </div>
     </footer>
     <script src="{{ asset('assets/js/bootstrap.bundle.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        const swiper = new Swiper('.swiper', {
-            speed: 400,
-            spaceBetween: 10,
-            // slidesPerView: 5,
-            autoplay: {
-                delay: 3000, // Mengatur jeda antar slide dalam milidetik (3 detik)
-                disableOnInteraction: false, // Swiper akan tetap autoplay meskipun pengguna berinteraksi dengan slide
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                type: 'bullets',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                325: {
-                    slidesPerView: 2,
-                    spaceBetween: 20,
-                },
-                768: {
-                    slidesPerView: 4,
-                    spaceBetween: 40,
-                },
-                1024: {
-                    slidesPerView: 5,
-                    spaceBetween: 50,
-                },
-            },
-        });
-    </script>
     @stack('scripts')
 </body>
 
