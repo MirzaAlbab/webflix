@@ -12,25 +12,32 @@ class MovieController extends Controller implements HasMiddleware
     public static function middleware()
     {
         return [
-            'auth', 'check.device.limit'
+            'auth',
+            new \Illuminate\Routing\Controllers\Middleware('subscribed', only: ['show']),
+            'check.device.limit',
         ];
     }
 
-    public function all(Request $request){
+    public function all(Request $request)
+    {
         // Logic to fetch and display all movies
         $movies = Movie::latest()->paginate(8);
-        if($request->ajax()){
+        if ($request->ajax()) {
             $html = view('components.movie-list', compact('movies'))->render();
+
             return response()->json(['html' => $html, 'next_page' => $movies->nextPageUrl()]);
         }
+
         return view('movies.all', compact('movies'));
 
     }
+
     public function index()
     {
         // Logic to fetch and display movies
-        $latestMovies= Movie::latest()->limit(10)->get();
+        $latestMovies = Movie::latest()->limit(10)->get();
         $popularMovies = Movie::with('ratings')->get()->sortByDesc('average_rating')->take(10);
+
         return view('movies.index', compact('latestMovies', 'popularMovies'));
     }
 
@@ -39,7 +46,7 @@ class MovieController extends Controller implements HasMiddleware
         // Logic to fetch and display a single movie
         $userPlan = Auth::user()->getCurrentPlan();
         $streamingUrl = $movie->getStreamingUrl($userPlan->resolution);
-        
+
         return view('movies.show', compact('movie', 'streamingUrl'));
     }
 
@@ -47,8 +54,8 @@ class MovieController extends Controller implements HasMiddleware
     {
         // Logic to search for movies
         $keyword = $request->input('q');
-        $movies = Movie::where('title', 'like', '%' . $keyword . '%')->get();
-        
+        $movies = Movie::where('title', 'like', '%'.$keyword.'%')->get();
+
         return view('movies.search', compact('movies', 'keyword'));
     }
 }

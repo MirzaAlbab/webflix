@@ -4,6 +4,7 @@
 @section('page-title', 'Plan Detail')
 
 @section('content')
+    @if(session('status'))<div class="alert alert-info">{{ session('status') }}</div>@endif
     <div class="mt-4 row justify-content-center gy-4">
         @foreach ($plans as $plan)
             <div class="col-12 col-md-4">

@@ -36,14 +36,15 @@ class Movie extends Model
     {
         return $this->hasMany(Rating::class);
     }
+
     public function getAverageRatingAttribute(): float
     {
-        return $this->ratings()->avg('rating');
+        return (float) ($this->ratings_avg_rating ?? $this->ratings()->avg('rating') ?? 0);
     }
 
     public function getStreamingUrl(string $planResolution)
     {
-        return match ($planResolution) {
+        return match (strtolower($planResolution)) {
             '720p' => $this->url_720,
             '1080p' => $this->url_1080,
             '4k' => $this->url_4k,
@@ -62,7 +63,7 @@ class Movie extends Model
         if ($minutes > 0 || $hours == 0) {
             $formatted .= "{$minutes}m";
         }
+
         return trim($formatted);
     }
-
 }

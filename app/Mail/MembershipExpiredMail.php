@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -12,6 +11,7 @@ use Illuminate\Queue\SerializesModels;
 class MembershipExpiredMail extends Mailable
 {
     use Queueable, SerializesModels;
+
     public $membership;
 
     /**
@@ -41,7 +41,7 @@ class MembershipExpiredMail extends Mailable
             markdown: 'mail.membership.expired',
             with: [
                 'expiredDate' => $this->membership->end_date->format('d M Y'),
-                'renewUrl' => url('/renew')
+                'renewUrl' => route('subscribe.plans'),
             ],
         );
     }

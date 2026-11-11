@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+<defs><linearGradient id="b" x2="1" y2="1"><stop stop-color="#0d2431"/><stop offset="1" stop-color="#08111d"/></linearGradient><radialGradient id="g"><stop stop-color="#ffb474" stop-opacity=".65"/><stop offset="1" stop-color="#ffb474" stop-opacity="0"/></radialGradient></defs>
+<rect width="600" height="900" fill="url(#b)"/><circle cx="300" cy="360" r="280" fill="url(#g)"/>
+<circle cx="260" cy="300" r="120" fill="none" stroke="#ffb474" stroke-width="2" opacity=".6"/>
+<circle cx="260" cy="300" r="81" fill="#ffb474" opacity=".4"/>
+<path d="M0 590 L180 350 L330 530 L460 290 L600 510 V900 H0Z" fill="#08131c"/>
+<path d="M0 630 L180 390 L330 570 L460 330 L600 550" fill="none" stroke="#ffb474" stroke-width="2" opacity=".7"/>
+<text x="48" y="74" fill="#ffb474" font-family="sans-serif" font-size="17" letter-spacing="4">DEMO COLLECTION</text>
+<text x="48" y="690" fill="#f6fbff" font-family="sans-serif" font-weight="700" font-size="53">The</text>
+<text x="48" y="756" fill="#f6fbff" font-family="sans-serif" font-weight="700" font-size="53">Last Crossing</text>
+<text x="48" y="836" fill="#ffb474" font-family="sans-serif" font-size="16" letter-spacing="3">WEBFLIX · 2026</text></svg>

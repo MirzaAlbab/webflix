@@ -2,58 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Plan;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-use Illuminate\Support\Facades\Auth;
 
 class SubscribeController extends Controller implements HasMiddleware
 {
-    /**
-     * The middleware that should be applied to the controller.
-     *
-     * @return array
-     */
     public static function middleware()
     {
-        return [
-            'auth', // Ensure the user is authenticated
-        ];
+        return ['auth'];
     }
-
 
     public function showPlans()
     {
-        // Logic to retrieve and display subscription plans
-        $plans = Plan::all();
-        return view('subscribe.plans', compact('plans'));
+        return view('subscribe.plans', ['plans' => Plan::all()]);
     }
 
     public function checkoutPlan(Plan $plan)
     {
-        $user = Auth::user();
-        return view('subscribe.checkout', compact('plan', 'user'));
+        return view('subscribe.checkout', ['plan' => $plan]);
     }
 
-    public function processCheckout(Request $request)
+    public function checkoutSuccess(Request $request)
     {
+        if (! $request->filled('transaction')) {
+            return redirect()->route('subscribe.plans');
+        }
 
-        $user = Auth::user();
-        $plan = Plan::findOrFail($request->plan_id);
+        $transaction = Transaction::where('user_id', $request->user()->id)
+            ->where('transaction_number', $request->query('transaction'))
+            ->firstOrFail();
 
-        // Logic to create a membership for the user
-        $user->memberships()->create([
-            'plan_id' => $plan->id,
-            'start_date' => now(),
-            'end_date' => now()->addDays($plan->duration),
-            'active' => true,
-        ]);
-
-        return redirect()->route('subscribe.success');
-    }
-    public function checkoutSuccess()
-    {
-        return view('subscribe.success');
+        return view('subscribe.success', compact('transaction'));
     }
 }

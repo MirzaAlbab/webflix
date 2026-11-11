@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+FROM composer:2.8
+COPY --chown=10001:10001 . /app
+WORKDIR /app
+RUN --mount=type=secret,id=proxy_ca \
+    if [ -f /run/secrets/proxy_ca ]; then export COMPOSER_CAFILE=/run/secrets/proxy_ca; fi; \
+    mkdir -p storage/demo storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs \
+    && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+    && adduser -D -u 10001 webflix \
+    && chown -R webflix:webflix storage bootstrap/cache
+USER webflix
+ENV APP_NAME="Webflix Demo" APP_ENV=local APP_DEBUG=false APP_URL=http://localhost:8001 \
+    WEBFLIX_DEMO=true DEMO_SIMULATE_PAYMENTS=true MIDTRANS_IS_PRODUCTION=false DB_CONNECTION=sqlite DB_DATABASE=/app/storage/demo/database.sqlite \
+    SESSION_DRIVER=file CACHE_STORE=file QUEUE_CONNECTION=sync MAIL_MAILER=log LOG_CHANNEL=single
+EXPOSE 8001
+ENTRYPOINT ["sh", "/app/scripts/start-demo.sh"]

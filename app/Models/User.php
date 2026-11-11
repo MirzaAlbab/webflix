@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -59,26 +58,11 @@ class User extends Authenticatable
 
     public function hasMembershipPlan(): bool
     {
-        return $this->memberships()
-            ->where('active', true)
-            ->where('end_date', '>', now())
-            ->exists();
+        return $this->getCurrentPlan() !== null;
     }
 
-    public function getCurrentPlan()
+    public function getCurrentPlan(): ?Plan
     {
-        $activeMembership = $this->memberships()
-            ->where('active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->latest()
-            ->first();
-        
-            if (!$activeMembership) {
-            return null;
-        }
-
-        return Plan::find($activeMembership->plan_id);
+        return $this->memberships()->current()->with('plan')->latest('id')->first()?->plan;
     }
-    
 }

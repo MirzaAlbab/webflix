@@ -5,18 +5,21 @@
     <div class="row card-movie-list" id="movie-list">
         <x-movie-list :movies="$movies" />
     </div>
+    @if($movies->hasMorePages())
     <div class="text-center">
         <button type="button" class="mb-4 btn btn-outline-success load-more" id="load-more" data-page="2">
             <i class="fa-solid fa-rotate-right rotate-right"></i>
             Lebih Banyak
         </button>
     </div>
+    @endif
 @endsection
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let loadMoreBtn = document.querySelector('#load-more');
+            if (!loadMoreBtn) return;
             loadMoreBtn.addEventListener('click', function() {
                 let page = loadMoreBtn.getAttribute('data-page');
                 fetch(`/movies?page=${page}`, {
